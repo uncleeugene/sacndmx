@@ -50,7 +50,7 @@ func (d *UART) GetSerial() string {
 }
 
 func (d *UART) GetDescription() string {
-	return "general UART"
+	return "generic UART"
 }
 
 func (d *UART) SelectDevice(name string) error {

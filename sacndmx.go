@@ -101,7 +101,7 @@ func main() {
 		}
 	})
 	recv.Start()
-	fmt.Printf("sACN listener started on %s.\n", CLIOptions.IPAddr)
+	fmt.Printf("sACN listener started on %s\n", CLIOptions.IPAddr)
 
 	go dmx.Run()
 	fmt.Printf("DMX stream started on %s (%s)\n", dmx.GetDescription(), dmx.GetSerial())
