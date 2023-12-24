@@ -14,7 +14,7 @@ At the moment being there are two supported types of interfaces:
 How to use
 ----------
 
-This is a command-line tool, so you run this in terminal. If you're a linux user you probably need no further explaination. If you run Windows, search for "command line" or "power shell" in your Start menu.
+This is a command-line tool, so you run this in terminal. If you're a linux user you probably need no further explanation. If you run Windows, search for "command line" or "power shell" in your Start menu.
 
 First you want to find out what hardware devices are available on your system. You may run the tool with `-t <device type> -l` options:
 
