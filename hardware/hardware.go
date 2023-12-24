@@ -8,4 +8,5 @@ type Hardware interface {
 	List() error
 	GetDescription() string
 	GetSerial() string
+	SelectDevice(string) error
 }

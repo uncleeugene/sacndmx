@@ -35,13 +35,13 @@ func EnttecOpenDMXInit() (*EnttecOpenDMX, error) {
 }
 
 func (d *EnttecOpenDMX) List() error {
-	if len(d.devList) > 0 {
+	if len(d.devList) != 0 {
 		for i := range d.devList {
 			fmt.Printf("Device %d: %s (S/N %s)\n", i, d.devList[i].Description, d.devList[i].SerialNumber)
 		}
 		return nil
 	} else {
-		return errors.New("0 devices found")
+		return errors.New("no devices found")
 	}
 
 }
@@ -54,7 +54,7 @@ func (d *EnttecOpenDMX) GetDescription() string {
 	return d.devList[d.selected].Description
 }
 
-func (d *EnttecOpenDMX) SelectSerial(serial string) error {
+func (d *EnttecOpenDMX) SelectDevice(serial string) error {
 	for i := range d.devList {
 		if d.devList[i].SerialNumber == serial {
 			d.selected = i

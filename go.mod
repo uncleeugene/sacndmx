@@ -9,6 +9,9 @@ require (
 )
 
 require (
+	github.com/creack/goselect v0.1.2 // indirect
+	github.com/stianeikeland/go-rpio/v4 v4.6.0 // indirect
+	go.bug.st/serial v1.6.1 // indirect
 	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
 )

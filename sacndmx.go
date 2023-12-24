@@ -11,26 +11,34 @@ import (
 )
 
 var CLIOptions struct {
-	DumpTOML bool   `short:"s" long:"showconfig" description:"Dump configuration and exit. Not implemented yet"`
-	Config   string `short:"c" long:"config" default:"sacndmx.toml" description:"Configuration file path. Not implemented yet"`
 	IPAddr   string `short:"a" long:"addr" default:"localhost" description:"Listener IP address"`
 	ListIPs  bool   `short:"i" long:"list-ips" description:"List local IPs"`
 	ListDevs bool   `short:"f" long:"list-devices" description:"List devices"`
 	Device   string `short:"d" long:"device" default:"" description:"Device serial number to connect to"`
 	Reset    bool   `short:"r" long:"reset-output" description:"Drop DMX output to zero in case of sACN timeout"`
-	DevType  string `short:"t" long:"device-type" default:"opendmx" description:"Device type. Not implemented yet."`
+	Mode     string `short:"m" long:"device type" default:"opendmx" description:"Output device type. Possible values are opendmx and uart"`
 }
 
 var dmx hardware.Hardware
 
 func main() {
+
 	_, err := flags.Parse(&CLIOptions)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1) // Exit with code 1 if cli flags are not correct
 	}
 
-	dmx, err = hardware.EnttecOpenDMXInit()
+	switch CLIOptions.Mode {
+	case "uart":
+		dmx, err = hardware.UartInit()
+	case "opendmx":
+		dmx, err = hardware.EnttecOpenDMXInit()
+	default:
+		fmt.Printf("unknown device type: %s. Bye.\n", CLIOptions.Mode)
+		os.Exit(3)
+	}
+
 	if err != nil {
 		fmt.Println("Cant access hardware driver")
 	}
@@ -66,10 +74,10 @@ func main() {
 	fmt.Println("sACN-DMX is starting...")
 
 	if err := dmx.Connect(); err == nil {
-		fmt.Printf("Using %s (S/N %s)\n", dmx.GetDescription(), dmx.GetSerial())
+		fmt.Printf("Using %s (%s)\n", dmx.GetDescription(), dmx.GetSerial())
 		defer dmx.Close()
 	} else {
-		fmt.Println(err)
+		fmt.Printf("Error connecting to device %s, %s\n", dmx.GetSerial(), err)
 		os.Exit(1)
 	}
 
