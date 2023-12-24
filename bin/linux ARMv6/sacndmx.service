@@ -1,0 +1,12 @@
+[Unit]
+Description=sACN to DMX Service
+After=network.target
+
+[Service]
+Type=simple
+User=user
+ExecStart=/usr/bin/sacndmx -a 192.168.11.90
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

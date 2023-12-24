@@ -2,76 +2,17 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"os"
-	"time"
+	"sacndmx/hardware"
 
 	"github.com/Hundemeier/go-sacn/sacn"
 	"github.com/jessevdk/go-flags"
-	ftdi "github.com/uncleeugene/goftdi"
 )
 
-type enttecOpenDMX struct {
-	Device  *ftdi.Device
-	channel []byte
-	buffer  []byte
-}
-
-var lineProperties = ftdi.LineProperties{
-	Bits:     ftdi.BITS_8,
-	StopBits: ftdi.STOP_2,
-	Parity:   ftdi.NONE,
-}
-
-func enttecOpenDMXConnect(d ftdi.DeviceInfo) (enttecOpenDMX, error) {
-	var device enttecOpenDMX
-	dev, err := ftdi.Open(d)
-	if err == nil {
-		device.Device = dev
-		device.channel = make([]byte, 512)
-		device.buffer = make([]byte, 513)
-	}
-	device.Device.SetLineProperty(lineProperties)
-	device.Device.SetBaudRate(250000)
-	device.Device.Purge()
-	return device, err
-}
-
-func (d *enttecOpenDMX) Close() error {
-	return d.Device.Close()
-}
-
-func (d *enttecOpenDMX) SetChannel(index int16, data byte) error {
-	d.channel[index-1] = data
-
-	return nil
-}
-
-func (d *enttecOpenDMX) Render() error {
-	for i := 0; i < 512; i++ {
-		d.buffer[i+1] = d.channel[i]
-	}
-	d.Device.SetBreakOn(lineProperties)
-	d.Device.SetBreakOff(lineProperties)
-	if _, err := d.Device.Write(d.buffer); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (d *enttecOpenDMX) Run() {
-	for {
-		if err := d.Render(); err != nil {
-			log.Fatalf("Error rendering DMX: %s\n", err)
-		}
-		time.Sleep(50 * time.Millisecond)
-	}
-}
-
 var CLIOptions struct {
-	DumpTOML bool   `short:"s" long:"showconfig" description:"Dump configuration and exit"`
-	Config   string `short:"c" long:"config" default:"sacndmx.toml" description:"Configuration file path"`
+	DumpTOML bool   `short:"s" long:"showconfig" description:"Dump configuration and exit. Not implemented yet"`
+	Config   string `short:"c" long:"config" default:"sacndmx.toml" description:"Configuration file path. Not implemented yet"`
 	IPAddr   string `short:"a" long:"addr" default:"localhost" description:"Listener IP address"`
 	ListIPs  bool   `short:"i" long:"list-ips" description:"List local IPs"`
 	ListDevs bool   `short:"f" long:"list-devices" description:"List devices"`
@@ -80,31 +21,25 @@ var CLIOptions struct {
 	DevType  string `short:"t" long:"device-type" default:"opendmx" description:"Device type. Not implemented yet."`
 }
 
-func main() {
-	var exitFlag bool
+var dmx hardware.Hardware
 
+func main() {
 	_, err := flags.Parse(&CLIOptions)
 	if err != nil {
-		log.Println(err)
+		fmt.Println(err)
 		os.Exit(1) // Exit with code 1 if cli flags are not correct
 	}
 
-	dl, err := ftdi.GetDeviceList()
-	if err == nil {
-		if CLIOptions.ListDevs {
-			for i := 0; i < len(dl); i++ {
-				fmt.Printf("Device %d: S/N %s, Desc: \"%s\"\n", i, dl[i].SerialNumber, dl[i].Description)
-			}
-			exitFlag = true
-		}
-	} else {
-		log.Fatal(err)
-		exitFlag = true
+	dmx, err = hardware.EnttecOpenDMXInit()
+	if err != nil {
+		fmt.Println("Cant access hardware driver")
 	}
 
-	recv, err := sacn.NewReceiverSocket(CLIOptions.IPAddr, nil)
-	if err != nil {
-		log.Fatal(err)
+	if CLIOptions.ListDevs {
+		if err := dmx.List(); err != nil {
+			fmt.Println(err)
+		}
+		os.Exit(2)
 	}
 
 	if CLIOptions.ListIPs {
@@ -119,40 +54,27 @@ func main() {
 				}
 			}
 		}
-		exitFlag = true
-	}
-
-	if exitFlag {
 		os.Exit(2)
 	}
 
-	log.Println("sACN-DMX is starting...")
-	var devIndex int
-	var devFound bool
-	if CLIOptions.Device != "" {
-		for i := range dl {
-			if dl[i].SerialNumber == CLIOptions.Device {
-				devIndex = i
-				devFound = true
-			}
-		}
-		if !devFound {
-			log.Printf("Cannot find a device with S/N %s. Fallback to default...", CLIOptions.Device)
-			devIndex = 0
-		}
-	} else {
-		devIndex = 0
+	recv, err := sacn.NewReceiverSocket(CLIOptions.IPAddr, nil)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
-	dmx, err := enttecOpenDMXConnect(dl[devIndex])
-	if err == nil {
-		log.Printf("Using %s (S/N %s)\n", dl[devIndex].Description, dl[devIndex].SerialNumber)
+
+	fmt.Println("sACN-DMX is starting...")
+
+	if err := dmx.Connect(); err == nil {
+		fmt.Printf("Using %s (S/N %s)\n", dmx.GetDescription(), dmx.GetSerial())
 		defer dmx.Close()
 	} else {
-		log.Fatal(err)
+		fmt.Println(err)
 		os.Exit(1)
 	}
 
 	go dmx.Run()
+
 	recv.SetOnChangeCallback(func(old sacn.DataPacket, newD sacn.DataPacket) {
 		data := newD.Data()
 		for i := 0; i < len(data); i++ {
@@ -160,7 +82,7 @@ func main() {
 		}
 	})
 	recv.SetTimeoutCallback(func(univ uint16) {
-		log.Println("Timeout detected on universe", univ)
+		fmt.Println("Timeout detected on universe", univ)
 		// Drop all DMX channels to zero on timeout
 		if CLIOptions.Reset {
 			for i := 0; i < 512; i++ {
@@ -169,7 +91,7 @@ func main() {
 		}
 	})
 	recv.Start()
-	log.Printf("sACN listener started on %s.\n", CLIOptions.IPAddr)
+	fmt.Printf("sACN listener started on %s.\n", CLIOptions.IPAddr)
 
 	select {}
 }
