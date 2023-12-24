@@ -65,6 +65,8 @@ And finally, if you want to run Enttec OpenDMX'ish device, you can let the `-t` 
 
 All this is just the same way on Windows. You can of course get full list of possible options with usual `-h` key.
 
+**To stop the tool** press Ctrl-C in terminal or send it SIGTERM signal.
+
 Sidenote: on linux you could get four `opendmx` devices for one actual hardware unit. Most likely you need the first one, so you can omit `-d` option. Not sure why it works this way. But if you need to pick another one you still can use `-d`, i.e. `-d A5069FNKA`.
 
 Not yet here
