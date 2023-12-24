@@ -11,12 +11,12 @@ import (
 )
 
 var CLIOptions struct {
-	IPAddr   string `short:"a" long:"addr" default:"localhost" description:"Listener IP address"`
-	ListIPs  bool   `short:"i" long:"list-ips" description:"List local IPs"`
-	ListDevs bool   `short:"f" long:"list-devices" description:"List devices"`
-	Device   string `short:"d" long:"device" default:"" description:"Device serial number to connect to"`
-	Reset    bool   `short:"r" long:"reset-output" description:"Drop DMX output to zero in case of sACN timeout"`
-	Mode     string `short:"m" long:"device type" default:"opendmx" description:"Output device type. Possible values are opendmx and uart"`
+	IPAddr   string `short:"s" long:"sacn-ip" default:"localhost" description:"Set sACN listener IP address"`
+	ListIPs  bool   `short:"n" long:"list-ips" description:"List local IPs"`
+	ListDevs bool   `short:"l" long:"list-devices" description:"List output devices for selected output type"`
+	Device   string `short:"d" long:"device" default:"" description:"Device serial number to connect to. (default: first encountered device)"`
+	Reset    bool   `short:"r" long:"reset-on-timeout" description:"Drop DMX output to zero in case of sACN timeout"`
+	Mode     string `short:"t" long:"device-type" default:"opendmx" description:"Output device type. Possible values are opendmx and uart"`
 }
 
 var dmx hardware.Hardware
@@ -81,11 +81,9 @@ func main() {
 		fmt.Printf("Using %s (%s)\n", dmx.GetDescription(), dmx.GetSerial())
 		defer dmx.Close()
 	} else {
-		fmt.Printf("Error connecting to device %s, %s\n", dmx.GetSerial(), err)
+		fmt.Printf("Error connecting to device, %s\n", err)
 		os.Exit(1)
 	}
-
-	go dmx.Run()
 
 	recv.SetOnChangeCallback(func(old sacn.DataPacket, newD sacn.DataPacket) {
 		data := newD.Data()
@@ -105,5 +103,7 @@ func main() {
 	recv.Start()
 	fmt.Printf("sACN listener started on %s.\n", CLIOptions.IPAddr)
 
+	go dmx.Run()
+	fmt.Printf("DMX stream started on %s (%s)\n", dmx.GetDescription(), dmx.GetSerial())
 	select {}
 }
