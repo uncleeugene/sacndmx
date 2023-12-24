@@ -9,7 +9,7 @@ import (
 )
 
 var uartMode = serial.Mode{
-	BaudRate: 200000,
+	BaudRate: 250000,
 	DataBits: 8,
 	Parity:   serial.NoParity,
 	StopBits: 2,

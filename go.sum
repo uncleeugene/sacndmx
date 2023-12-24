@@ -8,6 +8,8 @@ github.com/stianeikeland/go-rpio/v4 v4.6.0 h1:eAJgtw3jTtvn/CqwbC82ntcS+dtzUTgo5q
 github.com/stianeikeland/go-rpio/v4 v4.6.0/go.mod h1:A3GvHxC1Om5zaId+HqB3HKqx4K/AqeckxB7qRjxMK7o=
 github.com/uncleeugene/goftdi v0.0.0-20231222121057-ee97dafc52c7 h1:Md4COZziOLw+P+Hs/CkVA3fx4MndB8uRKHuIOpDjCZs=
 github.com/uncleeugene/goftdi v0.0.0-20231222121057-ee97dafc52c7/go.mod h1:D8gi16IErUk0rhexBfLqdJbPOFp42et/6uDSQgF8bBw=
+github.com/uncleeugene/goftdi v0.0.0-20231222141427-acb49e48f0e2 h1:4ZWKU+DmKDAS6OlVkwztmoA+7vT4BgBpz9VBTIygKV0=
+github.com/uncleeugene/goftdi v0.0.0-20231222141427-acb49e48f0e2/go.mod h1:D8gi16IErUk0rhexBfLqdJbPOFp42et/6uDSQgF8bBw=
 go.bug.st/serial v1.6.1 h1:VSSWmUxlj1T/YlRo2J104Zv3wJFrjHIl/T3NeruWAHY=
 go.bug.st/serial v1.6.1/go.mod h1:UABfsluHAiaNI+La2iESysd9Vetq7VRdpxvjx7CmmOE=
 golang.org/x/net v0.0.0-20221002022538-bcab6841153b/go.mod h1:YDH+HFinaLZZlnHAfSS6ZXJJ9M9t4Dl22yv3iI2vPwk=

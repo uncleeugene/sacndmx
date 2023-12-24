@@ -43,6 +43,10 @@ func main() {
 		fmt.Println("Cant access hardware driver")
 	}
 
+	if CLIOptions.Device != "" {
+		dmx.SelectDevice(CLIOptions.Device)
+	}
+
 	if CLIOptions.ListDevs {
 		if err := dmx.List(); err != nil {
 			fmt.Println(err)
