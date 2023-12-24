@@ -8,7 +8,7 @@ import (
 	"go.bug.st/serial"
 )
 
-var uartMode = serial.Mode{
+var dmxMode = serial.Mode{
 	BaudRate: 250000,
 	DataBits: 8,
 	Parity:   serial.NoParity,
@@ -66,7 +66,7 @@ func (d *UART) SelectDevice(name string) error {
 func (d *UART) Connect() error {
 	// Connect method establishes a connection to a device
 	if len(d.ports) != 0 {
-		port, err := serial.Open(d.ports[d.selected], &uartMode)
+		port, err := serial.Open(d.ports[d.selected], &dmxMode)
 		if err != nil {
 			return err
 		}
@@ -116,12 +116,12 @@ func (d *UART) render() error {
 
 func (d *UART) setBreak() {
 	var breakMode = serial.Mode{
-		BaudRate: 9600,
+		BaudRate: 115200,
 		DataBits: 8,
 		Parity:   serial.NoParity,
 		StopBits: 0,
 	}
 	d.port.SetMode(&breakMode)
-	d.port.Write([]byte("0"))
-	d.port.SetMode(&uartMode)
+	d.port.Write([]byte{0})
+	d.port.SetMode(&dmxMode)
 }
