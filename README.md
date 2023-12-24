@@ -81,4 +81,4 @@ There are couple of things not yet implemented but planned:
 Licensing and warranties
 ------------------------
 
-This tool is licensed on hell knows what kind of license. Probably some GPL as i use third-party libraries. So i assume you're free to download and modify it for your own sake. And i provide absolutely no warranties. It may work or it may break right in the middle of important show. We just don't know there's not enought statistical data :) Although i've tested the tool myself and actually use it, you better give it a good test run on your hardware before any production use.
+This tool is licensed on hell knows what kind of license. Probably some GPL as i use third-party libraries. So i assume you're free to download and modify it for your own sake. And i provide absolutely no warranties. It may work or it may break right in the middle of important show. We just don't know, there's not enought statistical data :) Although i've tested the tool myself and actually use it, you better give it a good test run on your hardware before any production use.
