@@ -41,7 +41,7 @@ Now let's say you want to run the tool on COM6 and bind to 192.168.1.101. Provid
 
 In most cases you will need to provide an ip-address option. By default the tool will stick itself to 'localhost' address, which means that it will only listen to a machine it is running on.
 
-On linux, you use your tty device path instaed of port name:
+On linux, you use your tty device path instead of port name:
 
 	lightmaster@pi ~/sacndmx> ./sacndmx -t uart -d /dev/ttyAMA0 -s 192.168.1.90
 	sACN-DMX is starting...
