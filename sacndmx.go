@@ -73,13 +73,14 @@ func main() {
 	// Saying hello :)
 	fmt.Println("sACN-DMX is starting...")
 
-	// Starting receiver socket
+	// Setting up receiver socket
 	listener.Bind(CLIOptions.IPAddr)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
+	// Connecting to a device
 	if err := dmx.Connect(); err == nil {
 		fmt.Printf("Using %s (%s)\n", dmx.GetDescription(), dmx.GetSerial())
 		defer dmx.Close()
@@ -88,16 +89,19 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Starting up network listener
 	ch := listener.Run()
-
 	fmt.Printf("sACN listener started on %s\n", CLIOptions.IPAddr)
 
+	// Starting up DMX output
 	go dmx.Run()
-
 	fmt.Printf("DMX stream started on %s (%s)\n", dmx.GetDescription(), dmx.GetSerial())
 
+	// Main loop
 	for {
+		// Waiting for a message
 		msg := <-ch
+		// Setting up channel
 		dmx.SetChannel(msg.Channel, msg.Value)
 	}
 
