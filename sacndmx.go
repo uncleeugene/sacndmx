@@ -15,7 +15,7 @@ var CLIOptions struct {
 	ListDevs bool   `short:"l" long:"list-devices" description:"List output devices for selected output type"`
 	Device   string `short:"d" long:"device" default:"" description:"Device serial number to connect to. (default: first encountered device)"`
 	Reset    bool   `short:"r" long:"reset-on-timeout" description:"Drop DMX output to zero in case of sACN timeout"`
-	Mode     string `short:"t" long:"device-type" choice:"opendmx" choice:"uart" default:"opendmx" description:"Output device type. Possible values are opendmx and uart"`
+	Mode     string `short:"t" long:"device-type" choice:"opendmx" choice:"uart" choice:"dummy" default:"opendmx" description:"Output device type. Possible values are opendmx and uart"`
 	NetMode  string `short:"i" long:"receiver-type" choice:"sacn" choice:"artnet" default:"sacn" description:"Listener type. Possible values are sacn and artnet"`
 }
 
@@ -49,7 +49,8 @@ func main() {
 		dmx, err = hardware.UartInit()
 	case "opendmx":
 		dmx, err = hardware.EnttecOpenDMXInit()
-	default:
+	case "dummy":
+		dmx, err = hardware.DummyOutInit()
 	}
 
 	if err != nil {

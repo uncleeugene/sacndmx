@@ -54,11 +54,7 @@ func (n *artNet) Run() chan dmxChannel {
 }
 
 func (n *artNet) OnChangeCallback(p packet.ArtNetPacket) {
-	fmt.Println("Got packet")
-	dmx, ok := p.(*packet.ArtDMXPacket)
-	if !ok {
-		fmt.Println("Invalid DMX Packet")
-	} else {
+	if dmx, ok := p.(*packet.ArtDMXPacket); ok {
 		stream := dmx.Data
 		for i := range stream {
 			ch := dmxChannel{
@@ -67,6 +63,7 @@ func (n *artNet) OnChangeCallback(p packet.ArtNetPacket) {
 			}
 			n.Out <- ch
 		}
+	} else {
+		fmt.Println("Invalid DMX Packet")
 	}
-
 }
