@@ -11,6 +11,8 @@ require (
 
 require (
 	github.com/creack/goselect v0.1.2 // indirect
+	github.com/jsimonetti/go-artnet v0.0.0-20230605072639-1e9a3d5515f9
+	github.com/sirupsen/logrus v1.9.3 // indirect
 	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
 )

@@ -15,7 +15,8 @@ var CLIOptions struct {
 	ListDevs bool   `short:"l" long:"list-devices" description:"List output devices for selected output type"`
 	Device   string `short:"d" long:"device" default:"" description:"Device serial number to connect to. (default: first encountered device)"`
 	Reset    bool   `short:"r" long:"reset-on-timeout" description:"Drop DMX output to zero in case of sACN timeout"`
-	Mode     string `short:"t" long:"device-type" default:"opendmx" description:"Output device type. Possible values are opendmx and uart"`
+	Mode     string `short:"t" long:"device-type" choice:"opendmx" choice:"uart" default:"opendmx" description:"Output device type. Possible values are opendmx and uart"`
+	NetMode  string `short:"i" long:"receiver-type" choice:"sacn" choice:"artnet" default:"sacn" description:"Listener type. Possible values are sacn and artnet"`
 }
 
 var dmx hardware.Hardware
@@ -31,7 +32,12 @@ func main() {
 	}
 
 	// Initializing network listener
-	listener, err = network.SACNInit()
+	switch CLIOptions.NetMode {
+	case "sacn":
+		listener, err = network.SACNInit()
+	case "artnet":
+		listener, err = network.ArtNetInit()
+	}
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(4)
@@ -44,8 +50,6 @@ func main() {
 	case "opendmx":
 		dmx, err = hardware.EnttecOpenDMXInit()
 	default:
-		fmt.Printf("unknown device type: %s. Bye.\n", CLIOptions.Mode)
-		os.Exit(3)
 	}
 
 	if err != nil {
@@ -74,7 +78,7 @@ func main() {
 	fmt.Println("sACN-DMX is starting...")
 
 	// Setting up receiver socket
-	listener.Bind(CLIOptions.IPAddr)
+	err = listener.Bind(CLIOptions.IPAddr)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -91,7 +95,7 @@ func main() {
 
 	// Starting up network listener
 	ch := listener.Run()
-	fmt.Printf("sACN listener started on %s\n", CLIOptions.IPAddr)
+	fmt.Printf("Listener started on %s\n", CLIOptions.IPAddr)
 
 	// Starting up DMX output
 	go dmx.Run()
