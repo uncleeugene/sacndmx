@@ -10,13 +10,13 @@ import (
 )
 
 var CLIOptions struct {
-	IPAddr   string `short:"s" long:"sacn-ip" default:"localhost" description:"Set sACN listener IP address"`
-	ListIPs  bool   `short:"n" long:"list-ips" description:"List local IPs"`
-	ListDevs bool   `short:"l" long:"list-devices" description:"List output devices for selected output type"`
+	IPAddr   string `short:"a" long:"addr" default:"localhost" description:"Set listener IP address"`
+	ListIPs  bool   `short:"n" long:"list-net" description:"List local IPs"`
+	ListDevs bool   `short:"h" long:"list-hardware" description:"List output devices for selected output type"`
 	Device   string `short:"d" long:"device" default:"" description:"Device serial number to connect to. (default: first encountered device)"`
 	Reset    bool   `short:"r" long:"reset-on-timeout" description:"Drop DMX output to zero in case of sACN timeout"`
-	Mode     string `short:"t" long:"device-type" choice:"opendmx" choice:"uart" choice:"dummy" default:"opendmx" description:"Output device type. Possible values are opendmx and uart"`
-	NetMode  string `short:"i" long:"receiver-type" choice:"sacn" choice:"artnet" default:"sacn" description:"Listener type. Possible values are sacn and artnet"`
+	Mode     string `short:"o" long:"output" choice:"opendmx" choice:"uart" choice:"dummy" default:"opendmx" description:"Output device type. Possible values are opendmx and uart"`
+	NetMode  string `short:"i" long:"input" choice:"sacn" choice:"artnet" default:"sacn" description:"Listener type. Possible values are sacn and artnet"`
 }
 
 var dmx hardware.Hardware

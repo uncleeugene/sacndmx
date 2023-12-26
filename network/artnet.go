@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/jsimonetti/go-artnet"
-	"github.com/jsimonetti/go-artnet/packet"
-	"github.com/jsimonetti/go-artnet/packet/code"
+	"github.com/uncleeugene/go-artnet"
+	"github.com/uncleeugene/go-artnet/packet"
+	"github.com/uncleeugene/go-artnet/packet/code"
 )
 
 type artNet struct {
